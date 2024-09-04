@@ -1,0 +1,75 @@
+object CreateMediaForm: TCreateMediaForm
+  Left = 132
+  Height = 93
+  Top = 242
+  Width = 422
+  ActiveControl = MediaCombo
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
+  Caption = 'Create Windows Installation Media'
+  ClientHeight = 93
+  ClientWidth = 422
+  Font.CharSet = ANSI_CHARSET
+  Font.Height = -13
+  Font.Pitch = fpVariable
+  Font.Quality = fqDraft
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnPaint = FormPaint
+  Position = poScreenCenter
+  LCLVersion = '3.2.0.0'
+  object TargetMediaLbl: TLabel
+    Left = 12
+    Height = 17
+    Top = 14
+    Width = 80
+    Caption = '&Target media:'
+    FocusControl = MediaCombo
+    ParentColor = False
+  end
+  object MediaCombo: TComboBox
+    Left = 12
+    Height = 25
+    Top = 32
+    Width = 260
+    ItemHeight = 17
+    ReadOnly = True
+    Style = csDropDownList
+    TabOrder = 0
+    OnCloseUp = MediaComboCloseUp
+    OnSelect = MediaComboSelect
+  end
+  object CreateMediaBtn: TButton
+    Left = 284
+    Height = 25
+    Top = 32
+    Width = 128
+    Caption = '&Create Media ...'
+    Enabled = False
+    TabOrder = 1
+    OnClick = CreateMediaBtnClick
+  end
+  object StatusBar: TStatusBar
+    Left = 0
+    Height = 23
+    Top = 70
+    Width = 422
+    Panels = <    
+      item
+        Width = 280
+      end    
+      item
+        Width = 300
+      end>
+    SimplePanel = False
+    SizeGrip = False
+  end
+  object RefreshTimer: TTimer
+    Enabled = False
+    Interval = 2500
+    OnTimer = RefreshTimerTimer
+    Left = 152
+    Top = 4
+  end
+end
