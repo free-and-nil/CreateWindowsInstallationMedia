@@ -1,13 +1,13 @@
 object CreateMediaForm: TCreateMediaForm
   Left = 132
-  Height = 93
+  Height = 120
   Top = 242
   Width = 422
   ActiveControl = MediaCombo
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Create Windows Installation Media'
-  ClientHeight = 93
+  ClientHeight = 120
   ClientWidth = 422
   Font.CharSet = ANSI_CHARSET
   Font.Height = -13
@@ -18,7 +18,7 @@ object CreateMediaForm: TCreateMediaForm
   OnDestroy = FormDestroy
   OnPaint = FormPaint
   Position = poScreenCenter
-  LCLVersion = '3.2.0.0'
+  LCLVersion = '3.4.0.0'
   object TargetMediaLbl: TLabel
     Left = 12
     Height = 17
@@ -47,13 +47,13 @@ object CreateMediaForm: TCreateMediaForm
     Width = 128
     Caption = '&Create Media ...'
     Enabled = False
-    TabOrder = 1
+    TabOrder = 2
     OnClick = CreateMediaBtnClick
   end
   object StatusBar: TStatusBar
     Left = 0
     Height = 23
-    Top = 70
+    Top = 97
     Width = 422
     Panels = <    
       item
@@ -65,11 +65,20 @@ object CreateMediaForm: TCreateMediaForm
     SimplePanel = False
     SizeGrip = False
   end
+  object HardDrivesCheck: TCheckBox
+    Left = 12
+    Height = 21
+    Top = 68
+    Width = 156
+    Caption = 'I&nclude USB hard drives'
+    TabOrder = 1
+    OnChange = HardDrivesCheckChange
+  end
   object RefreshTimer: TTimer
     Enabled = False
     Interval = 2500
     OnTimer = RefreshTimerTimer
-    Left = 152
-    Top = 4
+    Left = 336
+    Top = 64
   end
 end

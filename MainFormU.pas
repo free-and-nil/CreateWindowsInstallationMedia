@@ -27,6 +27,7 @@ type
   { TCreateMediaForm }
 
   TCreateMediaForm = class (TForm)
+    HardDrivesCheck: TCheckBox;
     CreateMediaBtn: TButton;
     StatusBar: TStatusBar;
     TargetMediaLbl: TLabel;
@@ -37,6 +38,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormPaint(Sender: TObject);
+    procedure HardDrivesCheckChange(Sender: TObject);
     procedure MediaComboCloseUp(Sender: TObject);
     procedure MediaComboSelect(Sender: TObject);
     procedure RefreshTimerTimer(Sender: TObject);
@@ -236,6 +238,11 @@ begin
         Application.Terminate
     else ResetRefreshTimer;
 end; { TCreateMediaForm.FormPaint }
+
+procedure TCreateMediaForm.HardDrivesCheckChange (Sender: TObject);
+begin
+    FillMediaCombo;
+end; { TCreateMediaForm.HardDrivesCheckChange }
 
 procedure TCreateMediaForm.MediaComboCloseUp (Sender: TObject);
 begin
@@ -555,6 +562,8 @@ begin
     CreateMediaBtn.Enabled := bEnable;
 end; { TCreateMediaForm.EnableControls }
 
+(* ---- *)
+
 procedure TCreateMediaForm.FillMediaCombo;
 
     (* ---- *)
@@ -584,6 +593,18 @@ procedure TCreateMediaForm.FillMediaCombo;
 
     (* ---- *)
 
+    function SupportedDisk (const Disk: TDiskDrive) : Boolean;
+    begin
+        if (Disk.MediaType = RemovableMedia) then
+            Result := true
+        else if (Disk.MediaType = FixedMedia) and
+                (HardDrivesCheck.Checked) and (Disk.BusType = btUsb) then
+            Result := true
+        else Result := false;
+    end; { SupportedDisk }
+
+    (* ---- *)
+
 var
     Disk : TDiskDrive;
     sDriveLetters, sInfo : String;
@@ -609,7 +630,7 @@ begin { TCreateMediaForm.FillMediaCombo }
         MediaCombo.Items.Clear;
 
     for Disk in DiskDrives do
-        if (Disk.MediaType = RemovableMedia) then
+        if (SupportedDisk (Disk)) then
         begin
             sDriveLetters := GetMediaDriveLetters (Disk);
 
