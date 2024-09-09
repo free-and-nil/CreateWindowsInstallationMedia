@@ -48,6 +48,10 @@ const
         D4:($A1, $6A, $BF, $D5, $01, $79, $D6, $AC));
 
 type
+    TBusType = (btUnknown, btScsi, btAtapi, btAta, bt1394, btSsa, btFibre,
+                btUsb, btRAID, btiScsi, btSas, btSata, btSd, btMmc, btVirtual,
+                btFileBackedVirtual, btSpaces, btNvme, btSCM, btUfs, btMax);
+
     TPartitionStyle = (psMBR, psGPT, psRaw);
 
 	TDiskDrive = class;
@@ -165,6 +169,7 @@ type
 	TDiskDrive = class
       private
         FaPartitions : TaPartitions;
+        FBusType : TBusType;
         FDiskIndex : Integer;
 		FMediaType : TMediaType;
         FDiskSize : Int64;
@@ -189,20 +194,21 @@ type
         function GetMediaType : String;
         function GetPartitionStyle (const Style: TPartitionStyle) : String;
 
+        property BusType : TBusType read FBusType;
+        property DevicePath : String read FDevicePath;
         property DiskIndex : Integer read FDiskIndex;
+        property DiskInterface : String read FDiskInterface;
+        property DiskSize : Int64 read FDiskSize;
+        property DisplayName : String read FDisplayName;
+        property MediaType : TMediaType read FMediaType;
         property PartitionCount : Integer read GetPartionCount;
         property Partitions [iIndex: Integer] : TPartition read GetPartition;
                                                                         default;
-        property MediaType : TMediaType read FMediaType;
-        property DiskSize : Int64 read FDiskSize;
         property PartitionStyle : TPartitionStyle read FPartitionStyle;
-        property DisplayName : String read FDisplayName;
-        property ProductRevision : String read FProductRevision;
         property ProductId : String read FProductId;
+        property ProductRevision : String read FProductRevision;
         property SerialNumber : String read FSerialNumber;
         property VendorId : String read FVendorId;
-        property DiskInterface : String read FDiskInterface;
-        property DevicePath : String read FDevicePath;
     end; { TDiskDrive }
 
     TDiskDrive_GPT = class (TDiskDrive)
@@ -382,33 +388,63 @@ end; { FormatSize }
 
 (* ---- *)
 
-function GetBusType (const dwBusType: DWord) : String;
+function GetBusType (const dwBusType: DWord) : TBusType;
 
 begin
 	case dwBusType of
-        1  : Result := cBusTypeScsi;
-        2  : Result := cBusTypeAtapi;
-        3  : Result := cBusTypeAta;
-        4  : Result := cBusType1394;
-        5  : Result := cBusTypeSsa;
-        6  : Result := cBusTypeFibre;
-        7  : Result := cBusTypeUsb;
-        8  : Result := cBusTypeRAID;
-        9  : Result := cBusTypeiScsi;
-        10 : Result := cBusTypeSas;
-        11 : Result := cBusTypeSata;
-        12 : Result := cBusTypeSd;
-        13 : Result := cBusTypeMmc;
-        14 : Result := cBusTypeVirtual;
-        15 : Result := cBusTypeFileBackedVirtual;
-        16 : Result := cBusTypeSpaces;
-        17 : Result := cBusTypeNvme;
-        18 : Result := cBusTypeSCM;
-        19 : Result := cBusTypeUfs;
-        20 : Result := cBusTypeMax;
-    	else Result := cBusTypeUnknown;
+        1  : Result := btScsi;
+        2  : Result := btAtapi;
+        3  : Result := btAta;
+        4  : Result := bt1394;
+        5  : Result := btSsa;
+        6  : Result := btFibre;
+        7  : Result := btUsb;
+        8  : Result := btRAID;
+        9  : Result := btiScsi;
+        10 : Result := btSas;
+        11 : Result := btSata;
+        12 : Result := btSd;
+        13 : Result := btMmc;
+        14 : Result := btVirtual;
+        15 : Result := btFileBackedVirtual;
+        16 : Result := btSpaces;
+        17 : Result := btNvme;
+        18 : Result := btSCM;
+        19 : Result := btUfs;
+        20 : Result := btMax;
+    	else Result := btUnknown;
     end; { case True of }
 end; { GetBusType }
+
+(* ---- *)
+
+function GetBusTypeString (const BusType: TBusType) : String;
+
+begin
+	case BusType of
+        btScsi  : Result := cBusTypeScsi;
+        btAtapi  : Result := cBusTypeAtapi;
+        btAta  : Result := cBusTypeAta;
+        bt1394  : Result := cBusType1394;
+        btSsa  : Result := cBusTypeSsa;
+        btFibre  : Result := cBusTypeFibre;
+        btUsb  : Result := cBusTypeUsb;
+        btRAID  : Result := cBusTypeRAID;
+        btiScsi : Result := cBusTypeiScsi;
+        btSas : Result := cBusTypeSas;
+        btSata : Result := cBusTypeSata;
+        btSd : Result := cBusTypeSd;
+        btMmc : Result := cBusTypeMmc;
+        btVirtual : Result := cBusTypeVirtual;
+        btFileBackedVirtual : Result := cBusTypeFileBackedVirtual;
+        btSpaces : Result := cBusTypeSpaces;
+        btNvme : Result := cBusTypeNvme;
+        btSCM : Result := cBusTypeSCM;
+        btUfs : Result := cBusTypeUfs;
+        btMax : Result := cBusTypeMax;
+    	else Result := cBusTypeUnknown;
+    end; { case True of }
+end; { GetBusTypeString }
 
 (* ---- *)
 
@@ -1616,7 +1652,8 @@ begin { TDiskDrives.GetDiskDetails }
 
     Result := true;
 
-    DD.FDiskInterface := GetBusType (DevDescriptor.STORAGE_BUS_TYPE);
+    DD.FBusType := GetBusType (DevDescriptor.STORAGE_BUS_TYPE);
+    DD.FDiskInterface := GetBusTypeString (DD.FBusType);
 
     if (DevDescriptor.VendorIdOffset <> 0) then
     begin
